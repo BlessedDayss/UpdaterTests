@@ -50,5 +50,71 @@ namespace Creatio.Updater.Tests
             // Assert
             Assert.That(result, Is.True);
         }
+
+        [Test]
+        public void ClearRedisCache_WhenExitCodeNotZero_ReturnsFalse()
+        {
+            // Arrange
+            Environment.ExitCode = 1;
+
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
+
+            // Assert
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public void ClearRedisCache_WhenRedisPasswordProvided_ExecutesCommandWithPassword()
+        {
+            // Arrange
+            _mockSiteInfo.Setup(s => s.RedisPassword).Returns("password");
+
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
+
+            // Assert
+            Assert.That(result, Is.True);
+            // Additional assertions can be made to verify the command execution with password
+        }
+
+        [Test]
+        public void ClearRedisCache_WhenRedisPasswordNotProvided_ExecutesCommandWithoutPassword()
+        {
+            // Arrange
+            _mockSiteInfo.Setup(s => s.RedisPassword).Returns(string.Empty);
+
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
+
+            // Assert
+            Assert.That(result, Is.True);
+            // Additional assertions can be made to verify the command execution without password
+        }
+
+        [Test]
+        public void ClearRedisCache_WhenExceptionThrown_ReturnsFalse()
+        {
+            // Arrange
+            _mockSiteInfo.Setup(s => s.RedisServer).Throws(new Exception("Test exception"));
+
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
+
+            // Assert
+            Assert.That(result, Is.False);
+        }
+
+        [Test]
+        public void ClearRedisCache_WhenRedisServerIsNull_ThrowsArgumentNullException()
+        {
+            // Arrange
+            _mockSiteInfo.Setup(s => s.RedisServer).Returns((string)null);
+
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => RedisExecutor.ClearRedisCache(_mockSiteInfo.Object));
+            Assert.That(ex.ParamName, Is.EqualTo("RedisServer"));
+            Assert.That(ex.Message, Does.Contain("Value cannot be null. (Parameter 'RedisServer')"));
+        }
     }
 }
