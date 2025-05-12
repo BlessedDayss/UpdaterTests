@@ -7,7 +7,7 @@ namespace Creatio.Updater
 
 	public static class RedisExecutor
 	{
-		public static bool ClearRedisCache(ISiteInfo siteInfo, IProcessUtility processUtility)
+		public static bool ClearRedisCache(ISiteInfo siteInfo)
 		{
 			if (UpdaterConfig.GetFeature("SkipClearRedisCache"))
 			{
@@ -24,7 +24,7 @@ namespace Creatio.Updater
 			return ExecuteCommand(arguments, processUtility);
 		}
 
-		private static bool ExecuteCommand(string arguments, IProcessUtility processUtility)
+		private static bool ExecuteCommand(string arguments)
 		{
 			const string command = "redis-cli";
 			try
@@ -38,6 +38,7 @@ namespace Creatio.Updater
 					UseShellExecute = false,
 					CreateNoWindow = true
 				};
+				var processUtility = new ProcessUtility();
 				return processUtility.StartProcess(arguments, command, processInfo);
 
 			}
