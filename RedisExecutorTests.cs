@@ -93,16 +93,17 @@ namespace Creatio.Updater.Tests
         }
 
         [Test]
-        public void ClearRedisCache_WhenExceptionThrown_ReturnsFalse()
+        public void ClearRedisCache_WhenRedisServerIsNull_ReturnsFalse()
         {
             // Arrange
-            _mockSiteInfo.Setup(s => s.RedisServer).Throws(new Exception("Test exception"));
+            _mockSiteInfo.Setup(s => s.RedisServer).Returns((string)null);
 
             // Act
             bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
 
             // Assert
             Assert.That(result, Is.False);
+
         }
 
         [Test]
@@ -115,6 +116,21 @@ namespace Creatio.Updater.Tests
             var ex = Assert.Throws<ArgumentNullException>(() => RedisExecutor.ClearRedisCache(_mockSiteInfo.Object));
             Assert.That(ex.ParamName, Is.EqualTo("RedisServer"));
             Assert.That(ex.Message, Does.Contain("Value cannot be null. (Parameter 'RedisServer')"));
+        }
+
+        [Test]
+        public void ClearRedisCache_WhenRedisCliNotFound_ReturnsFalse()
+        {
+            // Arrange
+            UpdaterConfig.Configuration.GetSection("features")["SkipClearRedisCache"] = "false";
+            // гарантируем, что redis‑cli не найдётся (например, PATH пустой)
+            Environment.SetEnvironmentVariable("PATH", string.Empty);
+
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
+
+            // Assert
+            Assert.That(result, Is.False);
         }
     }
 }
