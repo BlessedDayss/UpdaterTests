@@ -7,7 +7,7 @@ namespace Creatio.Updater
 
 	public static class RedisExecutor
 	{
-		public static ProcessUtility processUtility = new ProcessUtility();
+		public static ProcessUtility processUtility = new();
 		public static bool ClearRedisCache(ISiteInfo siteInfo)
 		{
 			if (UpdaterConfig.GetFeature("SkipClearRedisCache"))
