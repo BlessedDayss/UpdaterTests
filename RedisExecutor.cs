@@ -21,8 +21,9 @@ namespace Creatio.Updater
 			string arguments = !string.IsNullOrEmpty(siteInfo.RedisPassword)
 				? $"-h {siteInfo.RedisServer} -p {siteInfo.RedisPort} -n {siteInfo.RedisDB} --no-auth-warning -a {siteInfo.RedisPassword} flushdb"
 				: $"-h {siteInfo.RedisServer} -p {siteInfo.RedisPort} -n {siteInfo.RedisDB} flushdb";
-			return ExecuteCommand(arguments, processUtility);
+			return ExecuteCommand(arguments);
 		}
+
 
 		private static bool ExecuteCommand(string arguments)
 		{
@@ -40,7 +41,6 @@ namespace Creatio.Updater
 				};
 				var processUtility = new ProcessUtility();
 				return processUtility.StartProcess(arguments, command, processInfo);
-
 			}
 			catch (Exception ex)
 			{

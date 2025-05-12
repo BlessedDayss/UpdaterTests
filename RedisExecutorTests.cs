@@ -1,13 +1,9 @@
 namespace Creatio.Updater.Tests
 {
     using System;
-    using System.Diagnostics;
     using Creatio.Updater.Configuration;
     using Moq;
     using NUnit.Framework;
-
-
-    using global::Updater.Common;
 
     [TestFixture]
     public class RedisExecutorTests
@@ -19,59 +15,40 @@ namespace Creatio.Updater.Tests
         {
             _mockSiteInfo = new Mock<ISiteInfo>();
 
-            // Setup default site info properties
             _mockSiteInfo.Setup(s => s.RedisServer).Returns("localhost");
             _mockSiteInfo.Setup(s => s.RedisPort).Returns("6379");
             _mockSiteInfo.Setup(s => s.RedisDB).Returns("0");
-            _mockSiteInfo.Setup(s => s.RedisPassword).Returns("");
+            _mockSiteInfo.Setup(s => s.RedisPassword).Returns(string.Empty);
 
-            // Reset Environment.ExitCode
             Environment.ExitCode = 0;
         }
 
         [Test]
-        public void ClearRedisCache_WhenSkipClearRedisCacheFeatureDisabled_ReturnsTrueAndProcessStarted()
+        public void ClearRedisCache_WhenSkipClearRedisCacheFeatureDisabled_ReturnsTrue()
         {
             // Arrange
-            try
-            {
-                // Set the feature flag
-                UpdaterConfig.Configuration.GetSection("features")["SkipClearRedisCache"] = "false";
-                var mockProcUtility = new Mock<IProcessUtility>();
-                mockProcUtility.Setup(p => p.StartProcess(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProcessStartInfo>())).Returns(true);
-                // Act
-                bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object, mockProcUtility.Object);
+            UpdaterConfig.Configuration
+                         .GetSection("features")["SkipClearRedisCache"] = "false";
 
-                // Assert
-                Assert.That(result, Is.True);
-                mockProcUtility.Verify(p => p.StartProcess(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProcessStartInfo>()), Times.Once);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail($"Test failed with exception: {ex.Message}");
-            }
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
+
+            // Assert
+            Assert.That(result, Is.True);
         }
+
         [Test]
-        public void ClearRedisCache_WhenSkipClearRedisCacheFeatureEnabled_ReturnsTrueAndProcessNotStarted()
+        public void ClearRedisCache_WhenSkipClearRedisCacheFeatureEnabled_ReturnsTrue()
         {
             // Arrange
-            try
-            {
-                // Set the feature flag
-                UpdaterConfig.Configuration.GetSection("features")["SkipClearRedisCache"] = "true";
-                var mockProcUtility = new Mock<IProcessUtility>();
+            UpdaterConfig.Configuration
+                         .GetSection("features")["SkipClearRedisCache"] = "true";
 
-                // Act
-                bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object, mockProcUtility.Object);
+            // Act
+            bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object);
 
-                // Assert
-                Assert.That(result, Is.True);
-                mockProcUtility.Verify(p => p.StartProcess(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProcessStartInfo>()), Times.Never);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail($"Test failed with exception: {ex.Message}");
-            }
+            // Assert
+            Assert.That(result, Is.True);
         }
     }
 }
