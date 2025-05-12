@@ -1,11 +1,14 @@
-using System;
-using System.Diagnostics;
-using Creatio.Updater.Configuration;
-using Moq;
-using NUnit.Framework;
-
 namespace Creatio.Updater.Tests
 {
+    using System;
+    using System.Diagnostics;
+    using Creatio.Updater.Configuration;
+    using Moq;
+    using NUnit.Framework;
+
+
+    using global::Updater.Common;
+
     [TestFixture]
     public class RedisExecutorTests
     {
@@ -34,7 +37,7 @@ namespace Creatio.Updater.Tests
             {
                 // Set the feature flag
                 UpdaterConfig.Configuration.GetSection("features")["SkipClearRedisCache"] = "false";
-                var mockProcUtility = new Mock<IProcUtility>();
+                var mockProcUtility = new Mock<IProcessUtility>();
                 mockProcUtility.Setup(p => p.StartProcess(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ProcessStartInfo>())).Returns(true);
                 // Act
                 bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object, mockProcUtility.Object);
@@ -56,7 +59,7 @@ namespace Creatio.Updater.Tests
             {
                 // Set the feature flag
                 UpdaterConfig.Configuration.GetSection("features")["SkipClearRedisCache"] = "true";
-                var mockProcUtility = new Mock<IProcUtility>();
+                var mockProcUtility = new Mock<IProcessUtility>();
 
                 // Act
                 bool result = RedisExecutor.ClearRedisCache(_mockSiteInfo.Object, mockProcUtility.Object);
