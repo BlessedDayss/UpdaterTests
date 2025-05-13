@@ -5,13 +5,13 @@ namespace Updater.Common
 
     public interface IProcessUtility
     {
-        bool StartProcess(string argumnets, string command, ProcessStartInfo processInfo);
+        bool StartProcess(string arguments, string command, ProcessStartInfo processInfo);
     }
 
     public class ProcessUtility : IProcessUtility
     {
 
-        public bool StartProcess(string argumnets, string command, ProcessStartInfo processInfo)
+        public bool StartProcess(string arguments, string command, ProcessStartInfo processInfo)
         {
             using var process = new Process
             {

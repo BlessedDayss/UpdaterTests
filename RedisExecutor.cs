@@ -1,9 +1,9 @@
-namespace Creatio.Updater
+namespace Updater.Redis
 {
 	using System;
 	using System.Diagnostics;
+	using Creatio.Updater;
 	using Creatio.Updater.Configuration;
-	using global::Updater.Common;
 	using Updater.Common;
 
 	public static class RedisExecutor
