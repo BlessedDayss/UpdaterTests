@@ -3,15 +3,29 @@ namespace Updater.Common
     using System.Diagnostics;
     using Creatio.Updater;
 
+    #region Interface: IProcessUtility
+
     public interface IProcessUtility
     {
-        bool StartProcess(string arguments, string command, ProcessStartInfo processInfo);
+
+        #region Methods: Public
+
+        bool StartProcess(ProcessStartInfo processInfo);
+
+        #endregion
+
     }
+
+    #endregion
+
+    #region Class: ProcessUtility
 
     public class ProcessUtility : IProcessUtility
     {
 
-        public bool StartProcess(string arguments, string command, ProcessStartInfo processInfo)
+        #region Methods: Public
+
+        public bool StartProcess(ProcessStartInfo processInfo)
         {
             using var process = new Process
             {
@@ -28,5 +42,11 @@ namespace Updater.Common
             ExtendedConsole.WriteLineWarning($"Can't run Process:\n\t{errors}. Please run command manually.\n");
             return false;
         }
+
+        #endregion
+
     }
+
+    #endregion
+
 }

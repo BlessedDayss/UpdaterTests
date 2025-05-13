@@ -6,14 +6,28 @@ namespace Updater.Redis
 	using Creatio.Updater.Configuration;
 	using Updater.Common;
 
+	#region Class: RedisExecutor
+
 	public static class RedisExecutor
 	{
+
+		#region Fields: Private
+
 		private static IProcessUtility _processUtility;
+
+		#endregion
+
+		#region Properties: Public
+
 		public static IProcessUtility ProcessUtility
 		{
 			get => _processUtility ??= new ProcessUtility();
 			set => _processUtility = value;
 		}
+
+		#endregion
+
+		#region Methods: Public
 
 		public static bool ClearRedisCache(ISiteInfo siteInfo)
 		{
@@ -32,6 +46,10 @@ namespace Updater.Redis
 			return ExecuteCommand(arguments, ProcessUtility);
 		}
 
+		#endregion
+
+		#region Methods: Private
+
 		private static bool ExecuteCommand(string arguments, IProcessUtility processUtility)
 		{
 			const string command = "redis-cli";
@@ -46,9 +64,8 @@ namespace Updater.Redis
 					UseShellExecute = false,
 					CreateNoWindow = true
 				};
-				bool result = processUtility.StartProcess(arguments, command, processInfo);
+				bool result = processUtility.StartProcess(processInfo);
 				return result;
-
 			}
 			catch (Exception ex)
 			{
@@ -57,5 +74,11 @@ namespace Updater.Redis
 				return false;
 			}
 		}
+
+		#endregion
+
 	}
+
+	#endregion
+
 }
