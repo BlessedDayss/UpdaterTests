@@ -4,10 +4,17 @@ namespace Creatio.Updater
 	using System.Diagnostics;
 	using Creatio.Updater.Configuration;
 	using global::Updater.Common;
+	using Updater.Common;
 
 	public static class RedisExecutor
 	{
-		public static readonly ProcessUtility processUtility = new();
+		private static IProcessUtility _processUtility;
+		public static IProcessUtility ProcessUtility
+		{
+			get => _processUtility ??= new ProcessUtility();
+			set => _processUtility = value;
+		}
+
 		public static bool ClearRedisCache(ISiteInfo siteInfo)
 		{
 			if (UpdaterConfig.GetFeature("SkipClearRedisCache"))
@@ -22,12 +29,10 @@ namespace Creatio.Updater
 			string arguments = !string.IsNullOrEmpty(siteInfo.RedisPassword)
 				? $"-h {siteInfo.RedisServer} -p {siteInfo.RedisPort} -n {siteInfo.RedisDB} --no-auth-warning -a {siteInfo.RedisPassword} flushdb"
 				: $"-h {siteInfo.RedisServer} -p {siteInfo.RedisPort} -n {siteInfo.RedisDB} flushdb";
-			return ExecuteCommand(arguments, processUtility);
-
+			return ExecuteCommand(arguments, ProcessUtility);
 		}
 
-
-		private static bool ExecuteCommand(string arguments, ProcessUtility process)
+		private static bool ExecuteCommand(string arguments, IProcessUtility processUtility)
 		{
 			const string command = "redis-cli";
 			try
@@ -41,11 +46,14 @@ namespace Creatio.Updater
 					UseShellExecute = false,
 					CreateNoWindow = true
 				};
-				return processUtility.StartProcess(arguments, command, processInfo);
+				bool result = processUtility.StartProcess(arguments, command, processInfo);
+				return result;
+
 			}
 			catch (Exception ex)
 			{
-				ExtendedConsole.WriteLineWarning($"Can't run the Redis command: '{command} {arguments}': {ex.Message}. Please run command manually.\n");
+				ExtendedConsole.WriteLineWarning(
+					$"Can't run the Redis command: '{command} {arguments}': {ex.Message}. Please run command manually.\n");
 				return false;
 			}
 		}
